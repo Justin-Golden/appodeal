@@ -23,6 +23,13 @@ public class SwiftAppodealFlutterPlugin: NSObject, FlutterPlugin
         case "cache": cache(call, result)
         case "isReadyForShow": isReadyForShow(call, result)
         case "show": show(call, result)
+
+        case "setUserAge": setUserAge(call, result)
+        case "setUserGender": setUserGender(call, result)
+        case "setUserId": setUserId(call, result)
+        case "setSegmentFilter": setSegmentFilter(call, result)
+        case "showPlacement": showPlacement(call, result)
+        case "canShow": canShow(call, result)
         
         case "requestIOSTrackingAuthorization": requestIOSTrackingAuthorization(result)
         
@@ -72,6 +79,56 @@ public class SwiftAppodealFlutterPlugin: NSObject, FlutterPlugin
         result(nil)
     }
 
+    private func setUserAge(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let age = args["age"] as! UInt
+
+        Appodeal.setUserAge(age)
+        
+        result(nil)
+    }
+
+    private func setUserGender(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let gender = args["gender"] as! Int
+        if(gender == 0)
+        {
+            Appodeal.setUserGender(.male);
+        }
+          
+        else if(gender == 1)
+        {
+            Appodeal.setUserGender(.female); 
+
+        }
+        else
+        {
+             Appodeal.setUserGender(.other); 
+
+        }
+        
+        result(nil)
+    }
+
+    private func setUserId(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let id = args["id"] as! String
+
+        Appodeal.setUserId(id)
+        
+        result(nil)
+    }
+
+    private func setSegmentFilter(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let key = args["key"] as! String
+        let val = args["val"] as! String
+
+        Appodeal.setSegmentFilter([key : val]) 
+        
+        result(nil)
+    }
+
     private func cache(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let args = call.arguments as! Dictionary<String, Any>
         let adType = getAdType(adId: args["adType"] as! Int)
@@ -94,6 +151,23 @@ public class SwiftAppodealFlutterPlugin: NSObject, FlutterPlugin
         
         let rootViewController = UIApplication.shared.keyWindow?.rootViewController
         result(Appodeal.showAd(adType, rootViewController: rootViewController))
+    }
+
+    private func showPlacement(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let adType = getShowStyle(adType: getAdType(adId: args["adType"] as! Int))
+        let placement = args["placement"] as! String
+        
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        result(Appodeal.showAd(adType, forPlacement: placement, rootViewController: rootViewController))
+    }
+
+    private func canShow(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let args = call.arguments as! Dictionary<String, Any>
+        let adType = getAdType(adId: args["adType"] as! Int)
+        let placement = args["placement"] as! String
+        
+        result(Appodeal.canShow(adType, forPlacement: placement))
     }
 
     private func setCallbacks() {

@@ -24,9 +24,9 @@ class Appodeal {
   ///
   /// On devices with iOS 14+ it returns `true` or `false` depending whether the user granted access or not.
   static Future<bool> requestIOSTrackingAuthorization() async {
-    return Platform.isIOS ?
-      await _channel.invokeMethod('requestIOSTrackingAuthorization') :
-      true;
+    return Platform.isIOS
+        ? await _channel.invokeMethod('requestIOSTrackingAuthorization')
+        : true;
   }
 
   // region - Appodeal
@@ -42,8 +42,12 @@ class Appodeal {
   /// During the initialization you must define the type of ads [adTypes] that you would like to display in your app and
   /// also if ads should be presented in test mode [testMode] or not. Always set test mode as `true` during development
   /// or tests.
-  static Future<void> initialize({@required bool hasConsent, List<int> adTypes = const [], bool testMode = false}) async {
-    assert(_androidAppKey != null || _iosAppKey != null, 'You must set at least one of the keys for Android or iOS');
+  static Future<void> initialize(
+      {@required bool hasConsent,
+      List<int> adTypes = const [],
+      bool testMode = false}) async {
+    assert(_androidAppKey != null || _iosAppKey != null,
+        'You must set at least one of the keys for Android or iOS');
 
     // Register the callbacks
     _setCallbacks();
@@ -64,9 +68,13 @@ class Appodeal {
   ///
   /// Use the constants in the class `AdType` to specify what ad should be loaded.
   static Future<void> setAutoCache(int adType, bool autoCache) async {
-    return _channel.invokeMethod('setAutoCache', {
-      'adType': adType,
-      'autoCache': autoCache
+    return _channel.invokeMethod(
+        'setAutoCache', {'adType': adType, 'autoCache': autoCache});
+  }
+
+  static Future<void> setAge(int age) async {
+    return _channel.invokeMethod('setUserAge', {
+      'age': age,
     });
   }
 
@@ -75,9 +83,7 @@ class Appodeal {
   /// If you disabled the auto caching (function `setAutoCache()`) then you must call this function before you can
   /// display the ad type where auto cache has been disabled.
   static Future<void> cache(int adType) async {
-    return _channel.invokeMethod('cache', {
-      'adType': adType
-    });
+    return _channel.invokeMethod('cache', {'adType': adType});
   }
 
   /// Check if an ad of certain type [adType] is ready to be presented.
@@ -86,9 +92,7 @@ class Appodeal {
   ///
   /// Returns `true` if the ad is loaded.
   static Future<bool> isReadyForShow(int adType) async {
-    return _channel.invokeMethod('isReadyForShow', {
-      'adType': adType
-    });
+    return _channel.invokeMethod('isReadyForShow', {'adType': adType});
   }
 
   /// Shows an ad of certain type [adType].
@@ -97,9 +101,7 @@ class Appodeal {
   ///
   /// Returns `true` if the ad is shown.
   static Future<bool> show(int adType) async {
-    return _channel.invokeMethod('show', {
-      'adType': adType
-    });
+    return _channel.invokeMethod('show', {'adType': adType});
   }
   // endregion
 
@@ -117,6 +119,47 @@ class Appodeal {
       }
 
       return null;
+    });
+  }
+
+  //BETA
+  static Future<void> setUserAge(int age) async {
+    return _channel.invokeMethod('setUserAge', {
+      'age': age,
+    });
+  }
+
+  //0 for male, 1 for female, 2 for other
+  static Future<void> setUserGender(int gender) async {
+    return _channel.invokeMethod('setUserGender', {
+      'gender': gender,
+    });
+  }
+
+  static Future<void> setUserId(String id) async {
+    return _channel.invokeMethod('setUserGender', {
+      'id': id,
+    });
+  }
+
+  static Future<void> setSegmentFilter(String key, String val) async {
+    return _channel.invokeMethod('setSegmentFilter', {
+      'key': key,
+      'val': val,
+    });
+  }
+
+  static Future<bool> canShowAd(int adType, String placement) async {
+    return _channel.invokeMethod('canShow', {
+      'adType': adType,
+      'placement': placement,
+    });
+  }
+
+  static Future<bool> showPlacement(int adType, String placement) async {
+    return _channel.invokeMethod('showPlacement', {
+      'adType': adType,
+      'placement': placement,
     });
   }
 
@@ -156,12 +199,11 @@ class Appodeal {
   /// Returns an object of type `Consent` where you can check the user's consent status and in what zone/regulation, if
   /// any, that consent applies.
   static Future<Consent> fetchConsentInfo() async {
-    assert(_androidAppKey != null || _iosAppKey != null, 'You must set at least one of the keys for Android or iOS');
+    assert(_androidAppKey != null || _iosAppKey != null,
+        'You must set at least one of the keys for Android or iOS');
 
-    var consentMap = await _channel.invokeMethod('fetchConsentInfo', {
-      'androidAppKey': _androidAppKey,
-      'iosAppKey': _iosAppKey
-    });
+    var consentMap = await _channel.invokeMethod('fetchConsentInfo',
+        {'androidAppKey': _androidAppKey, 'iosAppKey': _iosAppKey});
 
     return Consent(consentMap);
   }
@@ -174,13 +216,12 @@ class Appodeal {
   /// Returns `true` if the app must request consent. This function will return `false` when the user is not protected
   /// by any privacy laws, but also when the user previously granted or declined permission to be tracked.
   static Future<bool> shouldShowConsent() async {
-    assert(_androidAppKey != null || _iosAppKey != null, 'You must set at least one of the keys for Android or iOS');
+    assert(_androidAppKey != null || _iosAppKey != null,
+        'You must set at least one of the keys for Android or iOS');
 
     await fetchConsentInfo();
-    return await _channel.invokeMethod('shouldShowConsent', {
-      'androidAppKey': _androidAppKey,
-      'iosAppKey': _iosAppKey
-    });
+    return await _channel.invokeMethod('shouldShowConsent',
+        {'androidAppKey': _androidAppKey, 'iosAppKey': _iosAppKey});
   }
 
   /// Displays a dialog window where the user can grant or deny access to be tracked online, according to GDPR or CCPA
